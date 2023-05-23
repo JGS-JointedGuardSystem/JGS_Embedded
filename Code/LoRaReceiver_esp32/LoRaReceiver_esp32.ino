@@ -15,63 +15,31 @@
 
 AsyncWebServer server(80);
 
-uint8_t address1_uint[6] = {0};
-uint8_t address2_uint[6] = {0};
-uint8_t address3_uint[6] = {0};
-uint8_t address4_uint[6] = {0};
-uint8_t address5_uint[6] = {0};
-uint8_t address6_uint[6] = {0};
-uint8_t address7_uint[6] = {0};
-uint8_t address8_uint[6] = {0};
 
 const char *PARAM_INPUT_1 = "ssid";
 const char *PARAM_INPUT_2 = "pass";
 const char *PARAM_INPUT_3 = "ip";
 const char *PARAM_INPUT_4 = "gateway";
 const char *PARAM_INPUT_5 = "subnet";
-const char *PARAM_INPUT_6 = "address1";
-const char *PARAM_INPUT_7 = "address2";
-const char *PARAM_INPUT_8 = "address3";
-const char *PARAM_INPUT_9 = "address4";
-const char *PARAM_INPUT_10 = "address5";
-const char *PARAM_INPUT_11 = "address6";
-const char *PARAM_INPUT_12 = "address7";
-const char *PARAM_INPUT_13 = "address8";
 
 String ssid;
 String pass;
 String ip;
 String gateway;
 String netmask;
-String address1;
-String address2;
-String address3;
-String address4;
-String address5;
-String address6;
-String address7;
-String address8;
 
 const char *ssidPath = "/ssid.txt";
 const char *passPath = "/pass.txt";
 const char *ipPath = "/ip.txt";
 const char *gatewayPath = "/gateway.txt";
 const char *subnetPath = "/subnet.txt";
-const char *addr1Path = "/address1.txt";
-const char *addr2Path = "/address2.txt";
-const char *addr3Path = "/address3.txt";
-const char *addr4Path = "/address4.txt";
-const char *addr5Path = "/address5.txt";
-const char *addr6Path = "/address6.txt";
-const char *addr7Path = "/address7.txt";
-const char *addr8Path = "/address8.txt";
 
 IPAddress localIP;
 IPAddress localGateway;
 IPAddress localSubnet;
 
 String WIFI_hostname = "ESPGateway_1";
-char Server_domain[] = "osj.pnxelec.com";
+char Server_domain[] = "jgs.pnxelec.com";
 int Server_port = 443;
 SocketIOclient socketIO;
 #define USE_SERIAL Serial
@@ -305,70 +273,6 @@ void SettingPage()
           writeFile(SPIFFS, subnetPath, netmask.c_str());
         }
 
-        // HTTP POST address1 value
-        if (p->name() == PARAM_INPUT_6) {
-          address1 = p->value().c_str();
-          USE_SERIAL.print("address1 set to: ");
-          USE_SERIAL.println(address1);
-          // Write file to save value
-          writeFile(SPIFFS, addr1Path, address1.c_str());
-        }
-        // HTTP POST address2 value
-        if (p->name() == PARAM_INPUT_7) {
-          address2 = p->value().c_str();
-          USE_SERIAL.print("address2 set to: ");
-          USE_SERIAL.println(address2);
-          // Write file to save value
-          writeFile(SPIFFS, addr2Path, address2.c_str());
-        }
-        // HTTP POST address3 value
-        if (p->name() == PARAM_INPUT_8) {
-          address3 = p->value().c_str();
-          USE_SERIAL.print("address3 set to: ");
-          USE_SERIAL.println(address3);
-          // Write file to save value
-          writeFile(SPIFFS, addr3Path, address3.c_str());
-        }
-        // HTTP POST address4 value
-        if (p->name() == PARAM_INPUT_9) {
-          address4 = p->value().c_str();
-          USE_SERIAL.print("address4 set to: ");
-          USE_SERIAL.println(address4);
-          // Write file to save value
-          writeFile(SPIFFS, addr4Path, address4.c_str());
-        }
-        // HTTP POST address5 value
-        if (p->name() == PARAM_INPUT_10) {
-          address5 = p->value().c_str();
-          USE_SERIAL.print("address5 set to: ");
-          USE_SERIAL.println(address5);
-          // Write file to save value
-          writeFile(SPIFFS, addr5Path, address5.c_str());
-        }
-        // HTTP POST address6 value
-        if (p->name() == PARAM_INPUT_11) {
-          address6 = p->value().c_str();
-          USE_SERIAL.print("address6 set to: ");
-          USE_SERIAL.println(address6);
-          // Write file to save value
-          writeFile(SPIFFS, addr6Path, address6.c_str());
-        }
-        // HTTP POST address7 value
-        if (p->name() == PARAM_INPUT_12) {
-          address7 = p->value().c_str();
-          USE_SERIAL.print("address7 set to: ");
-          USE_SERIAL.println(address7);
-          // Write file to save value
-          writeFile(SPIFFS, addr7Path, address7.c_str());
-        }
-        // HTTP POST address8 value
-        if (p->name() == PARAM_INPUT_13) {
-          address8 = p->value().c_str();
-          USE_SERIAL.print("address8 set to: ");
-          USE_SERIAL.println(address8);
-          // Write file to save value
-          writeFile(SPIFFS, addr8Path, address8.c_str());
-        }
         //USE_SERIAL.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
       }
     }
@@ -401,80 +305,11 @@ void setup()
   gateway = readFile(SPIFFS, gatewayPath);
   netmask = readFile(SPIFFS, subnetPath);
 
-  address1 = readFile(SPIFFS, addr1Path);
-  address2 = readFile(SPIFFS, addr2Path);
-  address3 = readFile(SPIFFS, addr3Path);
-  address4 = readFile(SPIFFS, addr4Path);
-  address5 = readFile(SPIFFS, addr5Path);
-  address6 = readFile(SPIFFS, addr6Path);
-  address7 = readFile(SPIFFS, addr7Path);
-  address8 = readFile(SPIFFS, addr8Path);
-  for (int i = 0; i < 5; i++)
-  {
-    address1_uint[i] = address1[i];
-    USE_SERIAL.print(address1_uint[i]);
-  }
-  USE_SERIAL.println();
-  for (int i = 0; i < 5; i++)
-  {
-    address2_uint[i] = address2[i];
-    USE_SERIAL.print(address2_uint[i]);
-  }
-  USE_SERIAL.println();
-  for (int i = 0; i < 5; i++)
-  {
-    address3_uint[i] = address3[i];
-    USE_SERIAL.print(address3_uint[i]);
-  }
-  USE_SERIAL.println();
-  for (int i = 0; i < 5; i++)
-  {
-    address4_uint[i] = address4[i];
-    USE_SERIAL.print(address4_uint[i]);
-  }
-  USE_SERIAL.println();
-  for (int i = 0; i < 5; i++)
-  {
-    address5_uint[i] = address5[i];
-    USE_SERIAL.print(address5_uint[i]);
-  }
-  USE_SERIAL.println();
-  for (int i = 0; i < 5; i++)
-  {
-    address6_uint[i] = address6[i];
-    USE_SERIAL.print(address6_uint[i]);
-  }
-  USE_SERIAL.println();
-  for (int i = 0; i < 5; i++)
-  {
-    address7_uint[i] = address7[i];
-    USE_SERIAL.print(address7_uint[i]);
-  }
-  USE_SERIAL.println();
-  for (int i = 0; i < 5; i++)
-  {
-    address8_uint[i] = address8[i];
-    USE_SERIAL.print(address8_uint[i]);
-  }
-  USE_SERIAL.println();
-  if (address1 == "" || address2 == "" || address3 == "" || address4 == "" || address5 == "" || address6 == "" || address7 == "" || address8 == "")
-  {
-    USE_SERIAL.println("Pipe Address not defined.Default value.");
-  }
   USE_SERIAL.println(ssid);
   USE_SERIAL.println(pass);
   USE_SERIAL.println(ip);
   USE_SERIAL.println(gateway);
   USE_SERIAL.println(netmask);
-
-  USE_SERIAL.println(address1);
-  USE_SERIAL.println(address2);
-  USE_SERIAL.println(address3);
-  USE_SERIAL.println(address4);
-  USE_SERIAL.println(address5);
-  USE_SERIAL.println(address6);
-  USE_SERIAL.println(address7);
-  USE_SERIAL.println(address8);
 
   if (initWiFi())
   {
