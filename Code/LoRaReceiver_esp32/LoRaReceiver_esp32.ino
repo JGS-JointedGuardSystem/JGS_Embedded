@@ -21,18 +21,21 @@ const char *PARAM_INPUT_2 = "pass";
 const char *PARAM_INPUT_3 = "ip";
 const char *PARAM_INPUT_4 = "gateway";
 const char *PARAM_INPUT_5 = "subnet";
+const char *PARAM_INPUT_6 = "username";
 
 String ssid;
 String pass;
 String ip;
 String gateway;
 String netmask;
+String username;
 
 const char *ssidPath = "/ssid.txt";
 const char *passPath = "/pass.txt";
 const char *ipPath = "/ip.txt";
 const char *gatewayPath = "/gateway.txt";
 const char *subnetPath = "/subnet.txt";
+const char *usernamePath = "/username.txt";
 
 IPAddress localIP;
 IPAddress localGateway;
@@ -272,6 +275,14 @@ void SettingPage()
           // Write file to save value
           writeFile(SPIFFS, subnetPath, netmask.c_str());
         }
+        // HTTP POST subnet value
+        if (p->name() == PARAM_INPUT_6) {
+          username = p->value().c_str();
+          USE_SERIAL.print("Username set to: ");
+          USE_SERIAL.println(username);
+          // Write file to save value
+          writeFile(SPIFFS, usernamePath, username.c_str());
+        }
 
         //USE_SERIAL.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
       }
@@ -304,6 +315,7 @@ void setup()
   ip = readFile(SPIFFS, ipPath);
   gateway = readFile(SPIFFS, gatewayPath);
   netmask = readFile(SPIFFS, subnetPath);
+  username = readFile(SPIFFS, usernamePath);
 
   USE_SERIAL.println(ssid);
   USE_SERIAL.println(pass);
@@ -328,19 +340,18 @@ void setup()
 
     SettingPage();
   }
-  socketIO.beginSSL(Server_domain, Server_port, "/socket.io/?EIO=4");
+  socketIO.begin(Server_domain, Server_port, "/socket.io/?EIO=4");
   socketIO.onEvent(socketIOEvent);
 }
 
-void update_state(int device_id, int updated_state, int alive)
+void update_state(String user_id, int device_no)
 {
   DynamicJsonDocument doc(1024);
   JsonArray array = doc.to<JsonArray>();
   array.add("update_state"); // event name
   JsonObject jsondata = array.createNestedObject();
-  jsondata["id"] = device_id;
-  jsondata["state"] = updated_state;
-  jsondata["alive"] = alive;
+  jsondata["user_id"] = user_id;
+  jsondata["device_no"] = device_no;
   String JSONdata;
   serializeJson(doc, JSONdata);
   socketIO.sendEVENT(JSONdata);
