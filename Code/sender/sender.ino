@@ -105,9 +105,9 @@ void clr_alarm()
   Serial.print("  0x");
   Serial.print(rtc.getStatus2(), HEX);
   Serial.print("\r\n");
-  LoRa.beginPacket();
-  LoRa.print("haha");
-  LoRa.endPacket();
+  //LoRa.beginPacket();
+  //LoRa.print("haha");
+  //LoRa.endPacket();
   rtc.initClock();
   rtc.setDate(14, 6, 3, 0, 10);
   rtc.setTime(1, 15, 50);
