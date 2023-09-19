@@ -17,7 +17,7 @@ String device_num;
 void blink()
 {
   alarm_flag = 1;
-  stat = 1;
+  //stat = 1;
 }
 
 ISR(PCINT2_vect) {
@@ -56,7 +56,7 @@ void setup()
   device_num += ',';
   
   for(int i = 14;i<19;i++){
-    device_num += (digitalRead(i) + '0');
+    device_num += (digitalRead(i));
   }
 
   device_num += ',';
@@ -116,7 +116,7 @@ void clr_alarm()
   Serial.print("blink!\r\n");
   alarm_flag = 0;
   attachInterrupt(1, blink, FALLING);
-  device_num[14] = stat + '0';
+  device_num[9] = stat + '0';
   stat = 0;
   Serial.println("stat");
   Serial.println("Lora");

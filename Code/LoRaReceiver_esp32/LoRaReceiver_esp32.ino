@@ -367,6 +367,8 @@ void loop()
   //USE_SERIAL.print("HELL");
   int packetSize = LoRa.parsePacket();
   if (packetSize) {
+    int device_no = 0;
+    int stat = 0;
     // received a packet
     USE_SERIAL.print("Received packet '");
 
@@ -375,10 +377,17 @@ void loop()
       String LoRaData = LoRa.readString();
       USE_SERIAL.print(LoRaData); 
     }
-
+    for(int i = 0;i<5;i++){
+      device_no *= 10;
+      device_no += LoRaData[3+i] - '0';
+    }
+    USE_SERIAL.println(device_no);
+    stat = LoRaData[9] - '0';
+    USE_SERIAL.println(stat);
     // print RSSI of packet
     USE_SERIAL.print("' with RSSI ");
     USE_SERIAL.println(LoRa.packetRssi());
+    
+    //update_state(stat,username,device_no);
   }
-  //update_state(,username,);-------------------------알잘딱
 }
