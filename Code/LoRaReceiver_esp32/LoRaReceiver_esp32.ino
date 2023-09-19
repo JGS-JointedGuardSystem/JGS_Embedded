@@ -367,6 +367,7 @@ void loop()
   //USE_SERIAL.print("HELL");
   int packetSize = LoRa.parsePacket();
   if (packetSize) {
+    String LoRaData;
     int device_no = 0;
     int stat = 0;
     // received a packet
@@ -374,7 +375,7 @@ void loop()
 
     // read packet
     while (LoRa.available()) {
-      String LoRaData = LoRa.readString();
+      LoRaData += LoRa.readString();
       USE_SERIAL.print(LoRaData); 
     }
     for(int i = 0;i<5;i++){
