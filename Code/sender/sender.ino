@@ -5,24 +5,26 @@
 #include <SPI.h>
 #include <LoRa.h>
 
-/* get a real time clock object */
 Rtc_Pcf8563 rtc;
 
-/* a flag for the interrupt */
 volatile int alarm_flag = 0;
 volatile int pin_mask;
 volatile int cnt = 1;
-/* the interrupt service routine */
+volatile int stat;
+
+String device_num;
+
 void blink()
 {
   alarm_flag = 1;
+  //Status = 0;
 }
 
 ISR(PCINT2_vect) {
   pin_mask = PIND & 0x04;
   if (cnt % 2) {
     switch (pin_mask) {
-      case 0x00 : alarm_flag = 1; break;
+      case 0x00 : alarm_flag = 1; stat = 1; break;
       case 0x04 : break;
     }
     cnt++;
@@ -39,39 +41,48 @@ void setup()
   pinMode(4, OUTPUT);
   digitalWrite(4, HIGH);
   Serial.begin(9600);
+  Serial.println("start");
+  
+  for(int i = 14;i<19;i++){
+    pinMode(i,INPUT_PULLUP);
+  }
+  
+  pinMode(5,INPUT_PULLUP);
+  pinMode(6,INPUT_PULLUP);
 
-  /* setup int on pin 3 of arduino */
-  /* clear out all the registers */
+  device_num += digitalRead(5);
+  device_num += digitalRead(6);
+
+  device_num += ',';
+  
+  for(int i = 14;i<19;i++){
+    device_num += (digitalRead(i) + '0');
+  }
+
+  device_num += ',';
+  device_num += 0;
   rtc.initClock();
-  /* set a time to start with.
-     day, weekday, month, century, year */
   rtc.setDate(14, 6, 3, 0, 10);
-  /* hr, min, sec */
   rtc.setTime(1, 15, 50);
-  /* set an alarm for 20 secs later...
-     alarm pin goes low when match occurs
-     this triggers the interrupt routine
-     min, hr, day, weekday
-     99 = no alarm value to be set
-  */
   rtc.setAlarm(16, 99, 99, 99);
   attachInterrupt(1, blink, FALLING);
   PCICR = 0x04;
   PCMSK2 = 0x10;
   SREG = 0x80;
-  //attachInterrupt(0, blink, FALLING);
   alarm_flag = 0;
 
   if (!LoRa.begin(433E6)) {
     Serial.println("Starting LoRa failed!");
     while (1);
   }
+
+  LoRa.setSyncWord(0xF3);
+  Serial.println("LoRa Initializing OK!");
+  
 }
 
 void loop()
 {
-  /* each sec update the display */
-  
   if (alarm_flag == 1) {
     clr_alarm();
   }
@@ -79,11 +90,10 @@ void loop()
 }
 
 void enterSleep() {
-  noInterrupts();                       // Disable interrupts
+  noInterrupts();                      
   attachInterrupt(1, blink, FALLING);
-  //attachInterrupt(0, blink, FALLING);
-  Serial.println("Going to sleep!");    // Print message to serial monitor
-  Serial.flush();                       // Ensure all characters are sent to the serial monitor
+  Serial.println("Going to sleep!");    
+  Serial.flush();                       
   LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
 }
 
@@ -99,30 +109,22 @@ void clr_alarm()
   LoRa.print("haha");
   LoRa.endPacket();
   rtc.initClock();
-  /* set a time to start with.
-     day, weekday, month, century, year */
   rtc.setDate(14, 6, 3, 0, 10);
-  /* hr, min, sec */
   rtc.setTime(1, 15, 50);
-  /* set an alarm for 20 secs later...
-     alarm pin goes low when match occurs
-     this triggers the interrupt routine
-     min, hr, day, weekday
-     99 = no alarm value to be set
-  */
   rtc.setAlarm(16, 99, 99, 99);
   detachInterrupt(1);
-  //detachInterrupt(0);
   Serial.print("blink!\r\n");
-  //rtc.clearAlarm();
-  //delay(1000);
   alarm_flag = 0;
   attachInterrupt(1, blink, FALLING);
-  //attachInterrupt(0, blink, FALLING);
+  device_num[14] += stat + '0';
+  stat = 0;
+  Serial.println("stat");
+  Serial.println("Lora");
   LoRa.beginPacket();
-  LoRa.print("haha");
+  Serial.println("a");
+  LoRa.print(device_num);
+  Serial.println("b");
   LoRa.endPacket();
-  digitalWrite(13,HIGH);
-  delay(500);
-  digitalWrite(13,LOW);
+  Serial.println("loranum");
+  //Serial.println("LED?");
 }
