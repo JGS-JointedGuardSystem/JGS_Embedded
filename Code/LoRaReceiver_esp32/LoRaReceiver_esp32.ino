@@ -43,7 +43,7 @@ IPAddress localSubnet;
 
 String WIFI_hostname = "ESPGateway_1";
 char Server_domain[] = "jgs.pnxelec.com";
-int Server_port = 443;
+int Server_port = 80;
 SocketIOclient socketIO;
 #define USE_SERIAL Serial
 
@@ -301,12 +301,12 @@ void setup()
   LoRa.setPins(ss, rst, dio0);
 
   while (!LoRa.begin(433E6)) {
-    Serial.println(".");
+    USE_SERIAL.println(".");
     delay(500);
   }
 
   LoRa.setSyncWord(0xF3);
-  Serial.println("LoRa Initializing OK!");
+  USE_SERIAL.println("LoRa Initializing OK!");
 
   USE_SERIAL.setDebugOutput(true);
   initSPIFFS();
@@ -322,6 +322,7 @@ void setup()
   USE_SERIAL.println(ip);
   USE_SERIAL.println(gateway);
   USE_SERIAL.println(netmask);
+  USE_SERIAL.println(username);
 
   if (initWiFi())
   {
@@ -344,12 +345,13 @@ void setup()
   socketIO.onEvent(socketIOEvent);
 }
 
-void update_state(String user_id, int device_no)
+void update_state(int State, String user_id, int device_no)
 {
   DynamicJsonDocument doc(1024);
   JsonArray array = doc.to<JsonArray>();
   array.add("update_state"); // event name
   JsonObject jsondata = array.createNestedObject();
+  jsondata["state"] = State;
   jsondata["user_id"] = user_id;
   jsondata["device_no"] = device_no;
   String JSONdata;
@@ -361,7 +363,8 @@ void update_state(String user_id, int device_no)
 
 void loop()
 {
-  socketIO.loop();
+  //socketIO.loop();
+  //USE_SERIAL.print("HELL");
   int packetSize = LoRa.parsePacket();
   if (packetSize) {
     // received a packet
@@ -377,4 +380,5 @@ void loop()
     USE_SERIAL.print("' with RSSI ");
     USE_SERIAL.println(LoRa.packetRssi());
   }
+  //update_state(,username,);-------------------------알잘딱
 }
