@@ -17,7 +17,7 @@ String device_num;
 void blink()
 {
   alarm_flag = 1;
-  //Status = 0;
+  stat = 1;
 }
 
 ISR(PCINT2_vect) {
@@ -40,7 +40,7 @@ void setup()
   pinMode(3, INPUT_PULLUP);           // set pin to input
   pinMode(4, OUTPUT);
   digitalWrite(4, HIGH);
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("start");
   
   for(int i = 14;i<19;i++){
@@ -60,7 +60,7 @@ void setup()
   }
 
   device_num += ',';
-  device_num += 0;
+  device_num += stat + '0';
   rtc.initClock();
   rtc.setDate(14, 6, 3, 0, 10);
   rtc.setTime(1, 15, 50);
@@ -116,7 +116,7 @@ void clr_alarm()
   Serial.print("blink!\r\n");
   alarm_flag = 0;
   attachInterrupt(1, blink, FALLING);
-  device_num[14] += stat + '0';
+  device_num[14] = stat + '0';
   stat = 0;
   Serial.println("stat");
   Serial.println("Lora");
