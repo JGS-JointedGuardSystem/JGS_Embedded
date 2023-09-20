@@ -121,10 +121,8 @@ void clr_alarm()
   Serial.println("stat");
   Serial.println("Lora");
   LoRa.beginPacket();
-  Serial.println("a");
   LoRa.print(device_num);
-  Serial.println("b");
   LoRa.endPacket();
-  Serial.println("loranum");
+  Serial.println(device_num);
   //Serial.println("LED?");
 }
