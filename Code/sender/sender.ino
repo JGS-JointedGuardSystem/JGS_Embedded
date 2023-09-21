@@ -55,9 +55,11 @@ void setup()
 
   device_num += ',';
   
-  for(int i = 14;i<19;i++){
+  for(int i = 14;i<18;i++){
     device_num += (digitalRead(i));
   }
+
+  device_num += '1';
 
   device_num += ',';
   device_num += stat + '0';
