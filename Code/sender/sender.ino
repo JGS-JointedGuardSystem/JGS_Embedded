@@ -85,6 +85,7 @@ void setup()
 
 void loop()
 {
+  if(stat) delay(300);
   if (alarm_flag == 1) {
     clr_alarm();
   }
