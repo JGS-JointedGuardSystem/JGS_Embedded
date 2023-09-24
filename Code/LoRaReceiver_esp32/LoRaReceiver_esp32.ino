@@ -345,13 +345,12 @@ void setup()
   socketIO.onEvent(socketIOEvent);
 }
 
-void update_state(int State, String user_id, int device_no)
+void alert(String user_id, int device_no)
 {
   DynamicJsonDocument doc(1024);
   JsonArray array = doc.to<JsonArray>();
-  array.add("update_state"); // event name
+  array.add("Alert"); // event name
   JsonObject jsondata = array.createNestedObject();
-  jsondata["state"] = State;
   jsondata["user_id"] = user_id;
   jsondata["device_no"] = device_no;
   String JSONdata;
@@ -361,9 +360,24 @@ void update_state(int State, String user_id, int device_no)
   return;
 }
 
+void test(String user_id, int device_no)
+{
+  DynamicJsonDocument doc(1024);
+  JsonArray array = doc.to<JsonArray>();
+  array.add("test_func"); // event name
+  JsonObject jsondata = array.createNestedObject();
+  jsondata["user_id"] = user_id;
+  jsondata["device_no"] = device_no;
+  String JSONdata;
+  serializeJson(doc, JSONdata);
+  socketIO.sendEVENT(JSONdata);
+  USE_SERIAL.println(JSONdata);
+  return;
+} 
+
 void loop()
 {
-  //socketIO.loop();
+  socketIO.loop();
   //USE_SERIAL.print("HELL");
   int packetSize = LoRa.parsePacket();
   if (packetSize) {
@@ -389,6 +403,13 @@ void loop()
     USE_SERIAL.print("' with RSSI ");
     USE_SERIAL.println(LoRa.packetRssi());
     
-    //update_state(stat,username,device_no);
+    if(stat == 1)
+    {
+      alert(username,device_no);
+    }
+    else if(stat == 0)
+    {
+      test(username,device_no);
+    }
   }
 }
