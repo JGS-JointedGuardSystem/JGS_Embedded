@@ -55,18 +55,18 @@ void setup()
 
   device_num += ',';
   
+  device_num += '1';
+  
   for(int i = 14;i<18;i++){
     device_num += (digitalRead(i));
   }
-
-  device_num += '1';
 
   device_num += ',';
   device_num += stat + '0';
   rtc.initClock();
   rtc.setDate(14, 6, 3, 0, 10);
-  rtc.setTime(1, 15, 50);
-  rtc.setAlarm(16, 99, 99, 99);
+  rtc.setTime(1, 15, 0);
+  rtc.setAlarm(18, 99, 99, 99);
   attachInterrupt(1, blink, FALLING);
   PCICR = 0x04;
   PCMSK2 = 0x10;
@@ -112,8 +112,8 @@ void clr_alarm()
   //LoRa.endPacket();
   rtc.initClock();
   rtc.setDate(14, 6, 3, 0, 10);
-  rtc.setTime(1, 15, 50);
-  rtc.setAlarm(16, 99, 99, 99);
+  rtc.setTime(1, 15, 0);
+  rtc.setAlarm(18, 99, 99, 99);
   detachInterrupt(1);
   Serial.print("blink!\r\n");
   alarm_flag = 0;
